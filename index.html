@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video List Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #player {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>YouTube Video List Player</h1>
+    <textarea id="videoListInput" placeholder="Enter YouTube Video Links (one per line)" rows="5" cols="40"></textarea>
+    <button onclick="loadVideoList()">Load Videos</button>
+
+    <div id="player"></div>
+
+    <script>
+        // Load the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+
+        // This function creates an <iframe> (and YouTube player) after the API code downloads.
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // The API will call this function when the video player is ready.
+        function onPlayerReady(event) {
+            // Do nothing initially
+        }
+
+        // The API calls this function when the player's state changes.
+        function onPlayerStateChange(event) {
+            // Handle state changes if needed
+        }
+
+        // Function to load a list of videos based on user input
+        function loadVideoList() {
+            var input = document.getElementById('videoListInput').value;
+            var videoIds = extractVideoIds(input);
+
+            if (videoIds.length > 0) {
+                player.loadPlaylist(videoIds);
+            } else {
+                alert('No valid video links found!');
+            }
+        }
+
+        // Function to extract video IDs from YouTube URLs
+        function extractVideoIds(input) {
+            var videoIds = [];
+            var lines = input.split('\n');
+            var regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})|(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/;
+
+            lines.forEach(function(line) {
+                var match = line.match(regex);
+                if (match) {
+                    videoIds.push(match[1] || match[2]);
+                }
+            });
+
+            return videoIds;
+        }
+    </script>
+
+</body>
+</html>
